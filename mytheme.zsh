@@ -13,13 +13,13 @@ function short_pwd() {
 function git_branch() {
   local branch=$(git branch --show-current 2>/dev/null)
   if [ -n "$branch" ]; then
-    local status=$(git status --porcelain=v1 2>/dev/null)
+    local gitstatus=$(git status --porcelain=v1 2>/dev/null)
     local color="%F{green}"
-    if [[ -n $(echo "$status" | grep '^??') ]]; then
+    if [[ -n $(echo "$gitstatus" | grep '^??') ]]; then
       color="%F{red}" # untracked changes
-    elif [[ -n $(echo "$status" | grep '^ M') ]]; then
+    elif [[ -n $(echo "$gitstatus" | grep '^ M') ]]; then
       color="%F{yellow}" # modified files
-    elif [[ -n $(echo "$status" | grep '^M') ]]; then
+    elif [[ -n $(echo "$gitstatus" | grep '^M') ]]; then
       color="%F{cyan}" # staged changes
     fi
     echo "${color}${branch}%f "
