@@ -1,18 +1,9 @@
-local branch_glyph=""
-local right_black_arrow_glyph=""
-local right_arrow_glyph=""
-local left_black_arrow_glyph=""
-local left_arrow_glyph=""
-
-# Function to get separator
-function k8s_separator() {
-  echo "%K{black}%F{blue}$right_black_arrow_glyph %k%f"
-}
-
 # Function to get the current Kubernetes context
 function k8s_context() {
+  local right_black_arrow_glyph=""
   local ctx=$(kubectl config current-context 2>/dev/null)
-  [ -n "$ctx" ] && echo "%K{blue}%F{black} $ctx %k%f$(k8s_separator)"
+  local separator="%K{black}%F{blue}$right_black_arrow_glyph %k%f"
+  [ -n "$ctx" ] && echo "%K{blue}%F{black} $ctx %k%f${separator}"
 }
 
 # Function to get the current directory in a shortened form
@@ -22,6 +13,9 @@ function short_pwd() {
 
 # Function to get the current Git branch and status
 function git_branch() {
+  local branch_glyph=""
+  local right_black_arrow_glyph=""
+
   local branch=$(git branch --show-current 2>/dev/null)
   if [ -n "$branch" ]; then
     local gitstatus=$(git status --porcelain=v1 2>/dev/null)
@@ -38,8 +32,18 @@ function git_branch() {
       tail="%F{yellow}$right_black_arrow_glyph %f"
     fi
     echo "${separator}${color}%F{black}$branch_glyph ${branch} %k%f${tail}"
+  else; 
+    echo "%F{black}$right_black_arrow_glyph %f"
   fi
 }
 
-PROMPT="$(k8s_context)$(short_pwd)$(git_branch)
-%F{grey}$%f "
+function update_prompt() {
+  PROMPT="$(k8s_context)$(short_pwd)$(git_branch)
+%F{black}$%f "
+}
+
+function precmd() {
+  update_prompt
+}
+
+PROMPT=""
